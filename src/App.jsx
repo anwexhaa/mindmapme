@@ -2,6 +2,7 @@ import React, { useState, useEffect } from "react";
 import MoodSelector from "./components/MoodSelector";
 import MoodCalendar from "./components/MoodCalendar";
 import CalendarView from "./views/CalendarView";
+import LogView from "./views/LogView";
 
 function App() {
   const [entries, setEntries] = useState(() => {
@@ -84,11 +85,8 @@ function App() {
       )}
 
       {/* Log Placeholder */}
-      {selectedTab === "log" && (
-        <div className="w-full max-w-md bg-white/90 p-6 rounded-xl shadow text-center">
-          <p className="text-gray-500">Log screen coming soon 📋</p>
-        </div>
-      )}
+      {selectedTab === "log" && <LogView entries={entries} />}
+
 
       {/* Settings Placeholder */}
       {selectedTab === "settings" && (
