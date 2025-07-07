@@ -3,3 +3,14 @@
 @tailwind base;
 @tailwind components;
 @tailwind utilities;
+
+body {
+  @apply text-gray-700 font-sans;
+  font-family: 'Nunito', sans-serif;
+}
+
+.react-calendar__tile--now {
+  background: none !important;
+  color: inherit !important;
+  font-weight: bold;
+}

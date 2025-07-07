@@ -1,60 +1,73 @@
-import { useState } from "react";
+import React, { useState } from "react";
 
-const moods = [
-  { label: "Happy", emoji: "😊", color: "#FFD700" },
-  { label: "Sad", emoji: "😢", color: "#A0C4FF" },
-  { label: "Anxious", emoji: "😰", color: "#BDB2FF" },
-  { label: "Angry", emoji: "😠", color: "#FFADAD" },
-  { label: "Calm", emoji: "😌", color: "#D0F4DE" },
-];
+const moods = ["Happy", "Sad", "Angry", "Anxious", "Excited"];
+const triggerOptions = ["Work", "Friends", "Weather", "Music", "Sleep"];
 
-const MoodSelector = () => {
+function MoodSelector({ addMoodEntry }) {
   const [index, setIndex] = useState(0);
-
-  const handlePrev = () => {
-    setIndex((prev) => (prev === 0 ? moods.length - 1 : prev - 1));
-  };
-
-  const handleNext = () => {
-    setIndex((prev) => (prev === moods.length - 1 ? 0 : prev + 1));
-  };
-
-  const handleSelect = () => {
-    const selectedMood = moods[index];
-    alert(`You selected: ${selectedMood.label} ${selectedMood.emoji}`);
-    // or store in localStorage, etc.
-  };
+  const [note, setNote] = useState("");
+  const [selectedTriggers, setSelectedTriggers] = useState([]);
 
   const currentMood = moods[index];
 
+  const handleTriggerToggle = (trigger) => {
+    if (selectedTriggers.includes(trigger)) {
+      setSelectedTriggers(selectedTriggers.filter((t) => t !== trigger));
+    } else {
+      setSelectedTriggers([...selectedTriggers, trigger]);
+    }
+  };
+
+  const handleSubmit = () => {
+    addMoodEntry({
+      mood: currentMood,
+      note,
+      triggers: selectedTriggers,
+    });
+    setNote(""); // reset note
+    setSelectedTriggers([]); // reset triggers
+  };
+
   return (
-    <div className="flex flex-col items-center gap-6">
-      {/* Mood carousel */}
-      <div className="flex items-center gap-6">
-        <button onClick={handlePrev} className="text-2xl hover:scale-110">◀️</button>
-
-        <div
-          className="flex flex-col items-center justify-center px-6 py-4 rounded-xl shadow-md transition"
-          style={{
-            backgroundColor: currentMood.color,
-          }}
-        >
-          <span className="text-4xl">{currentMood.emoji}</span>
-          <span className="text-lg font-semibold">{currentMood.label}</span>
-        </div>
-
-        <button onClick={handleNext} className="text-2xl hover:scale-110">▶️</button>
+    <div className="flex flex-col items-center bg-white p-4 rounded-xl shadow-md space-y-4">
+      <div className="flex items-center space-x-4">
+        <button onClick={() => setIndex((index - 1 + moods.length) % moods.length)} className="text-xl px-2">◀️</button>
+        <span className="text-2xl font-semibold">{currentMood}</span>
+        <button onClick={() => setIndex((index + 1) % moods.length)} className="text-xl px-2">▶️</button>
       </div>
 
-      {/* Select button */}
+      <textarea
+        value={note}
+        onChange={(e) => setNote(e.target.value)}
+        placeholder="Add a note about how you're feeling..."
+        className="w-full p-2 border rounded-md"
+        rows={2}
+      />
+
+      <div className="flex flex-wrap gap-2 justify-center">
+        {triggerOptions.map((trigger) => (
+          <button
+            key={trigger}
+            onClick={() => handleTriggerToggle(trigger)}
+            className={`px-3 py-1 rounded-full border ${
+              selectedTriggers.includes(trigger)
+                ? "bg-pink-300 text-white"
+                : "bg-gray-100"
+            }`}
+          >
+            {trigger}
+          </button>
+        ))}
+      </div>
+
       <button
-        onClick={handleSelect}
-        className="mt-2 px-6 py-2 bg-[#A875A7] text-white rounded-full shadow hover:bg-[#9666a0] transition"
+        onClick={handleSubmit}
+        className="mt-2 px-4 py-2 bg-pink-500 text-white rounded-xl hover:bg-pink-600 transition"
       >
-        Select this mood
+        Select Mood
       </button>
     </div>
   );
-};
+}
 
 export default MoodSelector;

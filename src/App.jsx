@@ -1,7 +1,6 @@
 import React, { useState, useEffect } from "react";
 import MoodSelector from "./components/MoodSelector";
 import MoodCalendar from "./components/MoodCalendar";
-// import GlassJar from "./components/GlassJar"; // for later :)
 
 function App() {
   const [entries, setEntries] = useState(() => {
@@ -13,11 +12,13 @@ function App() {
     localStorage.setItem("moodEntries", JSON.stringify(entries));
   }, [entries]);
 
-  const addMoodEntry = (mood) => {
-    const today = new Date().toISOString().split("T")[0];
+  const addMoodEntry = ({ mood, note, triggers }) => {
+    const today = new Date().toLocaleDateString('en-CA'); 
     const newEntry = {
       id: crypto.randomUUID(),
       mood,
+      note,
+      triggers,
       date: today,
     };
 
@@ -33,6 +34,7 @@ function App() {
         </h1>
 
         <MoodSelector addMoodEntry={addMoodEntry} />
+
         <MoodCalendar entries={entries} />
       </div>
     </div>
