@@ -3,6 +3,7 @@ import MoodSelector from "./components/MoodSelector";
 import MoodCalendar from "./components/MoodCalendar";
 import CalendarView from "./views/CalendarView";
 import LogView from "./views/LogView";
+import SettingsView from "./views/SettingsView";
 
 function App() {
   const [entries, setEntries] = useState(() => {
@@ -31,6 +32,15 @@ function App() {
 
     const updated = entries.filter((e) => e.date !== selectedDate).concat(newEntry);
     setEntries(updated);
+  };
+
+  // ✅ Correctly defined outside addMoodEntry
+  const handleClearData = () => {
+    const confirmed = window.confirm("Are you sure you want to clear all mood logs?");
+    if (confirmed) {
+      setEntries([]);
+      localStorage.removeItem("moodEntries");
+    }
   };
 
   // 🌼 Thought of the Day Logic
@@ -84,15 +94,12 @@ function App() {
         <CalendarView entries={entries} />
       )}
 
-      {/* Log Placeholder */}
+      {/* Log Screen */}
       {selectedTab === "log" && <LogView entries={entries} />}
 
-
-      {/* Settings Placeholder */}
+      {/* Settings Screen */}
       {selectedTab === "settings" && (
-        <div className="w-full max-w-md bg-white/80 p-6 rounded-xl shadow text-center">
-          <p className="text-gray-500">Settings coming soon 🛠️</p>
-        </div>
+        <SettingsView onClearData={handleClearData} />
       )}
 
       {/* Bottom Navigation */}
