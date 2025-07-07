@@ -20,7 +20,12 @@ body {
 .react-calendar__tile {
   padding: 0.75rem 0.5rem;
   border-radius: 0.75rem;
-  transition: background 0.2s ease;
+  transition: all 0.2s ease;
+  font-size : 1 rem;
+  font-weight: 500;
+  color: #444;
+  font-family: 'Nunito', sans-serif;
+
 }
 
 .react-calendar__tile--active {
@@ -34,3 +39,25 @@ body {
   border-radius: 0.75rem;
   font-weight: 600;
 }
+
+.react-calendar__month-view__weekdays {
+  text-transform: uppercase;
+  font-weight: 700;
+  color: #a855f7; /* soft violet */
+  font-size: 0.75rem;
+  letter-spacing: 0.05em;
+  font-family: 'Nunito', sans-serif;
+}
+
+.react-calendar__tile:enabled:hover {
+  background-color: #fef3c7; /* soft hover */
+  color: #7c3aed; /* lilac text */
+}
+
+.react-calendar__navigation__label {
+  font-size: 1.25rem;
+  font-weight: 700;
+  color: #9333ea; /* deeper violet */
+  font-family: 'Nunito', sans-serif;
+}
+
