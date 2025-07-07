@@ -1,7 +1,7 @@
 import React, { useState, useEffect } from "react";
-import TodayView from "./components/TodayView";
-// import CalendarView from "./components/CalendarView"; // Uncomment when ready
-// import LogView from "./components/LogView";           // Uncomment when ready
+import MoodSelector from "./components/MoodSelector";
+import MoodCalendar from "./components/MoodCalendar";
+import CalendarView from "./views/CalendarView";
 
 function App() {
   const [entries, setEntries] = useState(() => {
@@ -13,7 +13,7 @@ function App() {
     new Date().toLocaleDateString("en-CA")
   );
 
-  const [activeView, setActiveView] = useState("today"); // default = mood input screen
+  const [selectedTab, setSelectedTab] = useState("today");
 
   useEffect(() => {
     localStorage.setItem("moodEntries", JSON.stringify(entries));
@@ -32,42 +32,76 @@ function App() {
     setEntries(updated);
   };
 
-  return (
-    <div className="bg-gradient-to-b from-[#FDFBF8] via-[#FAF9F6] to-[#F5F3EF] flex flex-col items-center pt-12 px-4 pb-24">
+  // 🌼 Thought of the Day Logic
+  const quotes = [
+    "You’re not your thoughts. You’re the awareness behind them.",
+    "Even the darkest night will end and the sun will rise.",
+    "Be gentle with yourself. You’re doing the best you can.",
+    "The mind is everything. What you think you become.",
+    "Nothing can dim the light that shines from within.",
+  ];
+  const todayQuote = quotes[new Date().getDate() % quotes.length];
 
-      {/* 🔝 Top Nav */}
-      <div className="w-full max-w-md flex justify-between px-4 mb-4">
-        <button onClick={() => setActiveView("calendar")}>📆</button>
-        <button onClick={() => alert("Settings coming soon!")}>⚙️</button>
+  return (
+    <div className="min-h-screen w-full bg-gradient-to-b from-[#FDFBF8] via-[#FAF9F6] to-[#F5F3EF] flex flex-col items-center pt-12 px-4 pb-24">
+      
+      {/* Header */}
+      <div className="flex justify-between items-center w-full max-w-md mb-4 px-2">
+        <button onClick={() => setSelectedTab("calendarFull")} className="text-2xl">
+          📆
+        </button>
+        <h1 className="text-xl font-bold text-gray-700">MindMapMe</h1>
+        <button onClick={() => setSelectedTab("settings")} className="text-2xl">
+          ⚙️
+        </button>
       </div>
 
-      {/* 📄 Main Content Based on View */}
-      {activeView === "today" && (
-        <TodayView
-          entries={entries}
-          selectedDate={selectedDate}
-          setSelectedDate={setSelectedDate}
-          addMoodEntry={addMoodEntry}
-        />
-      )}
-
-      {activeView === "calendar" && (
-        <div className="w-full max-w-md bg-white rounded-2xl shadow-xl p-6 text-center">
-          <p className="text-gray-600">🧘‍♀️ Mindfulness or Calendar View coming soon!</p>
+      {/* Quote Screen */}
+      {selectedTab === "quote" && (
+        <div className="w-full max-w-md bg-white/90 p-6 rounded-xl shadow text-center space-y-4">
+          <h2 className="text-lg font-semibold text-gray-700">Thought of the Day 🌱</h2>
+          <p className="italic text-gray-600">
+            “{todayQuote}”
+          </p>
         </div>
       )}
 
-      {activeView === "log" && (
-        <div className="w-full max-w-md bg-white rounded-2xl shadow-xl p-6 text-center">
-          <p className="text-gray-600">🧾 Mood Log View coming soon!</p>
+      {/* Mood Tracker Today Screen */}
+      {selectedTab === "today" && (
+        <div className="w-full max-w-md space-y-4">
+          <MoodSelector addMoodEntry={addMoodEntry} />
+          <MoodCalendar
+            entries={entries}
+            selectedDate={selectedDate}
+            setSelectedDate={setSelectedDate}
+          />
         </div>
       )}
 
-      {/* 🔻 Bottom Nav (Updated icons + actions) */}
-      <div className="fixed bottom-0 w-full max-w-md bg-white flex justify-around p-3 shadow-inner">
-        <button onClick={() => setActiveView("today")}>📅</button> {/* Mood logging screen */}
-        <button onClick={() => setActiveView("log")}>🧾</button>   {/* Log of past entries */}
-        <button onClick={() => setActiveView("calendar")}>🧘‍♀️</button> {/* Placeholder */}
+      {/* Full Calendar Screen */}
+      {selectedTab === "calendarFull" && (
+        <CalendarView entries={entries} />
+      )}
+
+      {/* Log Placeholder */}
+      {selectedTab === "log" && (
+        <div className="w-full max-w-md bg-white/90 p-6 rounded-xl shadow text-center">
+          <p className="text-gray-500">Log screen coming soon 📋</p>
+        </div>
+      )}
+
+      {/* Settings Placeholder */}
+      {selectedTab === "settings" && (
+        <div className="w-full max-w-md bg-white/80 p-6 rounded-xl shadow text-center">
+          <p className="text-gray-500">Settings coming soon 🛠️</p>
+        </div>
+      )}
+
+      {/* Bottom Navigation */}
+      <div className="fixed bottom-4 w-full max-w-md flex justify-around items-center bg-white/70 backdrop-blur-md p-3 rounded-full shadow-lg mx-auto">
+        <button onClick={() => setSelectedTab("today")} className="text-2xl">📅</button>
+        <button onClick={() => setSelectedTab("log")} className="text-2xl">📋</button>
+        <button onClick={() => setSelectedTab("quote")} className="text-2xl">🧘‍♀️</button>
       </div>
     </div>
   );

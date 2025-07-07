@@ -1,8 +1,12 @@
-import React from "react";
+import React, { useState } from "react";
 import Calendar from "react-calendar";
 import "react-calendar/dist/Calendar.css";
 
-function MoodCalendar({ entries, selectedDate, setSelectedDate }) {
+function CalendarView({ entries }) {
+  const [selectedDate, setSelectedDate] = useState(
+    new Date().toLocaleDateString("en-CA")
+  );
+
   const moodColors = {
     Happy: "#FFF6B2",     // soft yellow
     Sad: "#DCE4EA",       // calm blue-gray
@@ -25,32 +29,36 @@ function MoodCalendar({ entries, selectedDate, setSelectedDate }) {
   }, {});
 
   return (
-    <div className="flex flex-col items-center mt-6 space-y-4">
-      {/* Calendar */}
-      <div className="bg-white/60 backdrop-blur-md p-4 rounded-xl shadow-md">
-        <Calendar
-          onClickDay={(value) =>
-            setSelectedDate(value.toLocaleDateString("en-CA"))
-          }
-          value={new Date(selectedDate)}
-          tileContent={({ date }) => {
-            const dateStr = date.toLocaleDateString("en-CA");
-            const mood = moodMap[dateStr];
-            if (!mood) return null;
+    <div className="min-h-screen w-full bg-gradient-to-b from-[#FDFBF8] via-[#FAF9F6] to-[#F5F3EF] px-4 py-6 flex flex-col items-center space-y-6">
+      <h1 className="text-xl font-bold text-gray-700">Mood History 📖</h1>
 
-            return (
-              <div
-                className="w-3 h-3 rounded-full mx-auto mt-1"
-                style={{ backgroundColor: moodColors[mood] || "#ccc" }}
-              ></div>
-            );
-          }}
-        />
+      {/* Calendar */}
+      <div className="w-full flex justify-center">
+        <div className="bg-white/70 backdrop-blur-md rounded-2xl shadow p-4">
+          <Calendar
+            onClickDay={(value) =>
+              setSelectedDate(value.toLocaleDateString("en-CA"))
+            }
+            value={new Date(selectedDate)}
+            tileContent={({ date }) => {
+              const dateStr = date.toLocaleDateString("en-CA");
+              const mood = moodMap[dateStr];
+              if (!mood) return null;
+
+              return (
+                <div
+                  className="w-2.5 h-2.5 rounded-full mx-auto mt-1"
+                  style={{ backgroundColor: moodColors[mood] || "#ccc" }}
+                ></div>
+              );
+            }}
+          />
+        </div>
       </div>
 
-      {/* Mood Log for Selected Date */}
+      {/* Log Viewer */}
       {entries.some((e) => e.date === selectedDate) ? (
-        <div className="w-full max-w-md bg-white/80 p-4 rounded-xl shadow-md space-y-2">
+        <div className="w-full max-w-md bg-white/90 p-4 rounded-xl shadow space-y-3">
           {entries
             .filter((e) => e.date === selectedDate)
             .map((entry) => (
@@ -77,4 +85,4 @@ function MoodCalendar({ entries, selectedDate, setSelectedDate }) {
   );
 }
 
-export default MoodCalendar;
+export default CalendarView;
