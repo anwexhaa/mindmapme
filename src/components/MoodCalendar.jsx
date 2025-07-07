@@ -18,24 +18,26 @@ function MoodCalendar({ entries, selectedDate, setSelectedDate }) {
 
   return (
   <div className="flex justify-center mt-6">
-    <Calendar
-      onClickDay={(value) =>
-        setSelectedDate(value.toLocaleDateString("en-CA"))
-      }
-      value={new Date(selectedDate)}
-      tileContent={({ date }) => {
-        const dateStr = date.toLocaleDateString("en-CA");
-        const mood = moodMap[dateStr];
-        if (!mood) return null;
+    <div className="bg-white/60 backdrop-blur-md p-4 rounded-xl shadow-md">
+      <Calendar
+        onClickDay={(value) =>
+          setSelectedDate(value.toLocaleDateString("en-CA"))
+        }
+        value={new Date(selectedDate)}
+        tileContent={({ date }) => {
+          const dateStr = date.toLocaleDateString("en-CA");
+          const mood = moodMap[dateStr];
+          if (!mood) return null;
 
-        return (
-          <div
-            className="w-3 h-3 rounded-full mx-auto mt-1"
-            style={{ backgroundColor: moodColors[mood] || "#ccc" }}
-          ></div>
-        );
-      }}
-    />
+          return (
+            <div
+              className="w-3 h-3 rounded-full mx-auto mt-1"
+              style={{ backgroundColor: moodColors[mood] || "#ccc" }}
+            ></div>
+          );
+        }}
+      />
+    </div>
   </div>
 );
 

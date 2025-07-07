@@ -9,8 +9,28 @@ body {
   font-family: 'Nunito', sans-serif;
 }
 
+.react-calendar {
+  border: none;
+  border-radius: 1rem;
+  font-family: 'Nunito', sans-serif;
+  background-color: transparent;
+  width: 100%;
+}
+
+.react-calendar__tile {
+  padding: 0.75rem 0.5rem;
+  border-radius: 0.75rem;
+  transition: background 0.2s ease;
+}
+
+.react-calendar__tile--active {
+  background-color: #fbcfe8 !important; /* soft pink */
+  color: #7c3aed !important;           /* soft violet text */
+}
+
 .react-calendar__tile--now {
-  background: none !important;
-  color: inherit !important;
-  font-weight: bold;
+  background: #f5e8ff !important; /* 🟣 soft lavender-purple */
+  color: #7c3aed !important;      /* text: vibrant lilac */
+  border-radius: 0.75rem;
+  font-weight: 600;
 }
