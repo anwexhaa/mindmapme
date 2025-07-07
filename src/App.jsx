@@ -8,21 +8,24 @@ function App() {
     return saved ? JSON.parse(saved) : [];
   });
 
+  const [selectedDate, setSelectedDate] = useState(() =>
+    new Date().toLocaleDateString("en-CA")
+  );
+
   useEffect(() => {
     localStorage.setItem("moodEntries", JSON.stringify(entries));
   }, [entries]);
 
   const addMoodEntry = ({ mood, note, triggers }) => {
-    const today = new Date().toLocaleDateString('en-CA'); 
     const newEntry = {
       id: crypto.randomUUID(),
       mood,
       note,
       triggers,
-      date: today,
+      date: selectedDate,
     };
 
-    const updated = entries.filter((e) => e.date !== today).concat(newEntry);
+    const updated = entries.filter((e) => e.date !== selectedDate).concat(newEntry);
     setEntries(updated);
   };
 
@@ -35,7 +38,11 @@ function App() {
 
         <MoodSelector addMoodEntry={addMoodEntry} />
 
-        <MoodCalendar entries={entries} />
+        <MoodCalendar
+          entries={entries}
+          selectedDate={selectedDate}
+          setSelectedDate={setSelectedDate}
+        />
       </div>
     </div>
   );
