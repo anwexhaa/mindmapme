@@ -33,7 +33,7 @@ function App() {
   };
 
   return (
-    <div className="min-h-screen w-full bg-gradient-to-b from-[#FFCCE1] to-[#F2F1ED] flex flex-col items-center pt-12 px-4 pb-24">
+    <div className="bg-gradient-to-b from-[#FDFBF8] via-[#FAF9F6] to-[#F5F3EF] flex flex-col items-center pt-12 px-4 pb-24">
 
       {/* 🔝 Top Nav */}
       <div className="w-full max-w-md flex justify-between px-4 mb-4">
