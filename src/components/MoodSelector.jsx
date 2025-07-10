@@ -29,40 +29,59 @@ function MoodSelector({ addMoodEntry }) {
   };
 
   return (
-    <div className="flex flex-col items-center bg-white p-4 rounded-xl shadow-md space-y-4">
-      <div className="flex items-center space-x-4">
-        <button onClick={() => setIndex((index - 1 + moods.length) % moods.length)} className="text-xl px-2">◀️</button>
+    <div className="h-full flex flex-col p-4">
+      {/* Mood Selection */}
+      <div className="flex items-center justify-center space-x-4 mb-4">
+        <button 
+          onClick={() => setIndex((index - 1 + moods.length) % moods.length)} 
+          className="text-xl px-2"
+        >
+          ◀️
+        </button>
         <span className="text-2xl font-semibold">{currentMood}</span>
-        <button onClick={() => setIndex((index + 1) % moods.length)} className="text-xl px-2">▶️</button>
+        <button 
+          onClick={() => setIndex((index + 1) % moods.length)} 
+          className="text-xl px-2"
+        >
+          ▶️
+        </button>
       </div>
 
-      <textarea
-        value={note}
-        onChange={(e) => setNote(e.target.value)}
-        placeholder="Add a note about how you're feeling..."
-        className="w-full p-2 border rounded-md"
-        rows={2}
-      />
-
-      <div className="flex flex-wrap gap-2 justify-center">
-        {triggerOptions.map((trigger) => (
-          <button
-            key={trigger}
-            onClick={() => handleTriggerToggle(trigger)}
-            className={`px-3 py-1 rounded-full border ${
-              selectedTriggers.includes(trigger)
-                ? "bg-pink-300 text-white"
-                : "bg-gray-100"
-            }`}
-          >
-            {trigger}
-          </button>
-        ))}
+      {/* Note Section */}
+      <div className="flex-1 mb-4">
+        <textarea
+          value={note}
+          onChange={(e) => setNote(e.target.value)}
+          placeholder="Add a note about how you're feeling..."
+          className="w-full h-full p-3 border rounded-lg resize-none"
+          rows={4}
+        />
       </div>
 
+      {/* Triggers Section */}
+      <div className="mb-4">
+        <h3 className="text-center mb-2 font-medium">Triggers</h3>
+        <div className="flex flex-wrap gap-2 justify-center">
+          {triggerOptions.map((trigger) => (
+            <button
+              key={trigger}
+              onClick={() => handleTriggerToggle(trigger)}
+              className={`px-3 py-1 rounded-full border ${
+                selectedTriggers.includes(trigger)
+                  ? "bg-pink-300 text-white"
+                  : "bg-gray-100"
+              }`}
+            >
+              {trigger}
+            </button>
+          ))}
+        </div>
+      </div>
+
+      {/* Submit Button */}
       <button
         onClick={handleSubmit}
-        className="mt-2 px-4 py-2 bg-pink-500 text-white rounded-xl hover:bg-pink-600 transition"
+        className="px-4 py-3 bg-pink-500 text-white rounded-xl hover:bg-pink-600 transition w-full"
       >
         Select Mood
       </button>

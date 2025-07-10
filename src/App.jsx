@@ -72,28 +72,45 @@ function App() {
     }
   };
 
-  const PageWrapper = ({ children }) => (
-    <div className="min-h-screen w-full bg-gradient-to-b from-[#FDFBF8] via-[#FAF9F6] to-[#F5F3EF] flex flex-col items-center pt-12 px-4 pb-24">
-      {/* Top Header */}
-      <div className="flex justify-between items-center w-full max-w-md mb-4 px-2">
-        <button onClick={() => navigate("/calendar")} className="text-2xl">📆</button>
-        <h1 className="text-xl font-bold text-gray-700">MindMapMe</h1>
-        <button onClick={() => navigate("/settings")} className="text-2xl">⚙️</button>
-      </div>
-
-      {/* Main Content */}
-      {children}
-
-      {/* Bottom Navigation - now visible on all devices */}
-      {isLoggedIn && (
-        <div className="fixed bottom-4 w-full max-w-md flex justify-around items-center bg-white/70 backdrop-blur-md p-3 rounded-full shadow-lg mx-auto">
-          <button onClick={() => navigate("/")} className="text-2xl">📅</button>
-          <button onClick={() => navigate("/log")} className="text-2xl">📋</button>
-          <button onClick={() => navigate("/quote")} className="text-2xl">🧘‍♀️</button>
-        </div>
-      )}
+const PageWrapper = ({ children }) => (
+  <div className="min-h-screen w-full bg-gradient-to-b from-[#FDFBF8] via-[#FAF9F6] to-[#F5F3EF] flex flex-col items-center pt-12 px-4 pb-24">
+    {/* Top Header - Updated Layout */}
+    <div className="flex justify-between items-center w-full max-w-5xl mb-4 px-4">
+      {/* Far Left Calendar Button */}
+      <button 
+        onClick={() => navigate("/calendar")} 
+        className="text-2xl flex-none"
+      >
+        📆
+      </button>
+      
+      {/* Centered Title */}
+      <h1 className="text-xl font-bold text-gray-700 mx-auto px-4">
+        MindMapMe
+      </h1>
+      
+      {/* Far Right Settings Button */}
+      <button 
+        onClick={() => navigate("/settings")} 
+        className="text-2xl flex-none"
+      >
+        ⚙️
+      </button>
     </div>
-  );
+
+    {/* Main Content */}
+    {children}
+
+    {/* Bottom Navigation */}
+    {isLoggedIn && (
+      <div className="fixed bottom-4 w-full max-w-md flex justify-around items-center bg-white/70 backdrop-blur-md p-3 rounded-full shadow-lg mx-auto">
+        <button onClick={() => navigate("/")} className="text-2xl">📅</button>
+        <button onClick={() => navigate("/log")} className="text-2xl">📋</button>
+        <button onClick={() => navigate("/quote")} className="text-2xl">🧘‍♀️</button>
+      </div>
+    )}
+  </div>
+);
 
   if (isLoggedIn === null) {
     return (
