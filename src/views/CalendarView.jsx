@@ -8,11 +8,11 @@ function CalendarView({ entries }) {
   );
 
   const moodColors = {
-    Happy: "#FFF6B2",     // soft yellow
-    Sad: "#DCE4EA",       // calm blue-gray
-    Angry: "#FBE4D8",     // pastel peach
-    Anxious: "#EDEDED",   // light gray
-    Excited: "#FDF3C2",   // warm beige
+    Happy: "#F5E054",     // soft yellow
+    Sad: "#4D66F5",       // calm blue-gray
+    Angry: "#F51E25",     // pastel peach
+    Anxious: "#47F596",   // light gray
+    Excited: "#F5B3A7",   // warm beige
   };
 
   const moodEmojis = {
