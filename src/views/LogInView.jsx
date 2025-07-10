@@ -12,7 +12,6 @@ function LoginView() {
   const handleLogin = async () => {
     try {
       await signInWithEmailAndPassword(auth, email, password);
-      localStorage.setItem("isLoggedIn", "true");
       navigate("/");
     } catch (err) {
       setError("Login failed. Check email or password.");

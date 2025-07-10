@@ -14,6 +14,8 @@ import CalendarView from "./views/CalendarView";
 import LogView from "./views/LogView";
 import SettingsView from "./views/SettingsView";
 import LoginView from "./views/LogInView";
+import { signOut } from "firebase/auth";
+import { auth } from "./firebase";
 
 function App() {
   const [entries, setEntries] = useState(() => {
@@ -62,7 +64,15 @@ function App() {
     }
   };
 
-  const isLoggedIn = localStorage.getItem("isLoggedIn") === "true";
+ const [isLoggedIn, setIsLoggedIn] = useState(null);
+
+useEffect(() => {
+  const unsubscribe = auth.onAuthStateChanged((user) => {
+    setIsLoggedIn(!!user);
+  });
+
+  return () => unsubscribe(); // cleanup
+}, []);
 
   // 🌿 Layout Wrapper
   const PageWrapper = ({ children }) => (
@@ -91,6 +101,15 @@ function App() {
       )}
     </div>
   );
+
+  if (isLoggedIn === null) {
+  return (
+    <div className="min-h-screen flex items-center justify-center text-lg text-gray-600">
+      Checking login status...
+    </div>
+  );
+}
+
 
   return (
     <Routes>
@@ -154,7 +173,8 @@ function App() {
             path="/settings"
             element={
               <PageWrapper>
-                <SettingsView onClearData={handleClearData} />
+                <SettingsView onClearData={handleClearData}
+                onLogout={() => signOut(auth)} />
               </PageWrapper>
             }
           />
