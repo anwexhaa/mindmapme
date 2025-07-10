@@ -2,8 +2,8 @@ import React, { useState, useEffect } from "react";
 import {
   Routes,
   Route,
-  useNavigate,
   Navigate,
+  useNavigate,
   useLocation,
 } from "react-router-dom";
 
@@ -19,48 +19,38 @@ import SignUpView from "./views/SignUpView";
 import { auth } from "./firebase";
 
 function App() {
-  const [entries, setEntries] = useState([]);
+  const [entries, setEntries] = useState(() => {
+    const saved = localStorage.getItem("moodEntries");
+    return saved ? JSON.parse(saved) : [];
+  });
+
   const [selectedDate, setSelectedDate] = useState(() =>
     new Date().toLocaleDateString("en-CA")
   );
-  const [user, setUser] = useState(null);
-  const [isLoggedIn, setIsLoggedIn] = useState(null);
 
+  const [isLoggedIn, setIsLoggedIn] = useState(null);
   const navigate = useNavigate();
   const location = useLocation();
 
   const quotes = [
-    "You’re not your thoughts. You’re the awareness behind them.",
+    "You're not your thoughts. You're the awareness behind them.",
     "Even the darkest night will end and the sun will rise.",
-    "Be gentle with yourself. You’re doing the best you can.",
+    "Be gentle with yourself. You're doing the best you can.",
     "The mind is everything. What you think you become.",
     "Nothing can dim the light that shines from within.",
   ];
   const todayQuote = quotes[new Date().getDate() % quotes.length];
 
-  // 🔐 Check auth
   useEffect(() => {
-    const unsubscribe = auth.onAuthStateChanged((firebaseUser) => {
-      setUser(firebaseUser);
-      setIsLoggedIn(!!firebaseUser);
+    localStorage.setItem("moodEntries", JSON.stringify(entries));
+  }, [entries]);
+
+  useEffect(() => {
+    const unsubscribe = auth.onAuthStateChanged((user) => {
+      setIsLoggedIn(!!user);
     });
     return () => unsubscribe();
   }, []);
-
-  // 🔁 Load entries for this user
-  useEffect(() => {
-    if (user) {
-      const saved = localStorage.getItem(`moodEntries_${user.uid}`);
-      setEntries(saved ? JSON.parse(saved) : []);
-    }
-  }, [user]);
-
-  // 💾 Save entries for this user
-  useEffect(() => {
-    if (user) {
-      localStorage.setItem(`moodEntries_${user.uid}`, JSON.stringify(entries));
-    }
-  }, [entries, user]);
 
   const addMoodEntry = ({ mood, note, triggers }) => {
     const newEntry = {
@@ -70,36 +60,31 @@ function App() {
       triggers,
       date: selectedDate,
     };
-
-    const updated = entries.filter((e) => e.date !== selectedDate);
-    updated.push(newEntry);
-    setEntries([...updated]);
+    const updated = entries.filter((e) => e.date !== selectedDate).concat(newEntry);
+    setEntries(updated);
   };
 
   const handleClearData = () => {
-    if (user) {
-      const confirmed = window.confirm("Clear all mood logs?");
-      if (confirmed) {
-        setEntries([]);
-        localStorage.removeItem(`moodEntries_${user.uid}`);
-      }
+    const confirmed = window.confirm("Clear all mood logs?");
+    if (confirmed) {
+      setEntries([]);
+      localStorage.removeItem("moodEntries");
     }
-  };
-
-  const handleLogout = () => {
-    auth.signOut();
   };
 
   const PageWrapper = ({ children }) => (
     <div className="min-h-screen w-full bg-gradient-to-b from-[#FDFBF8] via-[#FAF9F6] to-[#F5F3EF] flex flex-col items-center pt-12 px-4 pb-24">
+      {/* Top Header */}
       <div className="flex justify-between items-center w-full max-w-md mb-4 px-2">
         <button onClick={() => navigate("/calendar")} className="text-2xl">📆</button>
         <h1 className="text-xl font-bold text-gray-700">MindMapMe</h1>
         <button onClick={() => navigate("/settings")} className="text-2xl">⚙️</button>
       </div>
 
+      {/* Main Content */}
       {children}
 
+      {/* Bottom Navigation - now visible on all devices */}
       {isLoggedIn && (
         <div className="fixed bottom-4 w-full max-w-md flex justify-around items-center bg-white/70 backdrop-blur-md p-3 rounded-full shadow-lg mx-auto">
           <button onClick={() => navigate("/")} className="text-2xl">📅</button>
@@ -131,20 +116,26 @@ function App() {
       {isLoggedIn && (
         <>
           <Route
-            path="/"
-            element={
-              <PageWrapper>
-                <div className="w-full max-w-md space-y-4">
-                  <MoodSelector addMoodEntry={addMoodEntry} />
-                  <MoodCalendar
-                    entries={entries}
-                    selectedDate={selectedDate}
-                    setSelectedDate={setSelectedDate}
-                  />
-                </div>
-              </PageWrapper>
-            }
+  path="/"
+  element={
+    <PageWrapper>
+      <div className="w-full max-w-5xl grid grid-cols-1 md:grid-cols-2 gap-6 h-full">
+        <div className="bg-white/90 rounded-xl shadow-md p-4 h-full min-h-[500px] flex flex-col">
+          <div className="flex-1">
+            <MoodSelector addMoodEntry={addMoodEntry} />
+          </div>
+        </div>
+        <div className="bg-white/90 rounded-xl shadow-md p-4 h-full min-h-[500px]">
+          <MoodCalendar
+            entries={entries}
+            selectedDate={selectedDate}
+            setSelectedDate={setSelectedDate}
           />
+        </div>
+      </div>
+    </PageWrapper>
+  }
+/>
 
           <Route
             path="/calendar"
@@ -170,7 +161,7 @@ function App() {
               <PageWrapper>
                 <div className="w-full max-w-md bg-white/90 p-6 rounded-xl shadow text-center space-y-4">
                   <h2 className="text-lg font-semibold text-gray-700">Thought of the Day 🌱</h2>
-                  <p className="italic text-gray-600">“{todayQuote}”</p>
+                  <p className="italic text-gray-600">"{todayQuote}"</p>
                 </div>
               </PageWrapper>
             }
@@ -182,8 +173,7 @@ function App() {
               <PageWrapper>
                 <SettingsView
                   onClearData={handleClearData}
-                  onLogout={handleLogout}
-                  user={user}
+                  onLogout={() => auth.signOut()}
                 />
               </PageWrapper>
             }
