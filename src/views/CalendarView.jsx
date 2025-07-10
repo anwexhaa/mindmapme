@@ -1,6 +1,7 @@
 import React, { useState } from "react";
 import Calendar from "react-calendar";
 import "react-calendar/dist/Calendar.css";
+import { BookOpenCheck } from "lucide-react";
 
 function CalendarView({ entries }) {
   const [selectedDate, setSelectedDate] = useState(
@@ -30,7 +31,10 @@ function CalendarView({ entries }) {
 
   return (
     <div className="min-h-screen w-full bg-gradient-to-b from-[#FDFBF8] via-[#FAF9F6] to-[#F5F3EF] px-4 py-6 flex flex-col items-center space-y-6">
-      <h1 className="text-xl font-bold text-gray-700">Mood History 📖</h1>
+      <h1 className="text-xl font-bold text-gray-700 flex items-center gap-2">
+        Mood History <BookOpenCheck className="w-6 h-6 text-black" />
+      </h1>
+
 
       {/* Calendar */}
       <div className="w-full flex justify-center">

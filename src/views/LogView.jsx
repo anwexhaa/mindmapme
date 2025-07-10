@@ -1,4 +1,5 @@
 import React from "react";
+import { ScrollText } from "lucide-react";
 
 function LogView({ entries }) {
   const getEmoji = (mood) => {
@@ -14,8 +15,13 @@ function LogView({ entries }) {
 
   return (
     <div className="w-full max-w-md space-y-4">
-      <h2 className="text-xl font-bold text-center text-gray-700">Your Mood Logs 📋</h2>
+      {/* Centered Header with Icon */}
+      <div className="flex justify-center items-center gap-2 mb-2">
+        <h1 className="text-xl font-bold text-gray-700">Mood Logs</h1>
+        <ScrollText className="w-6 h-6 text-black" />
+      </div>
 
+      {/* Log Entries */}
       {entries.length === 0 ? (
         <p className="text-gray-400 text-center italic">No entries yet…</p>
       ) : (
@@ -24,7 +30,10 @@ function LogView({ entries }) {
             .slice()
             .sort((a, b) => new Date(b.date) - new Date(a.date))
             .map((entry) => (
-              <div key={entry.id} className="bg-white/90 p-4 rounded-xl shadow space-y-2">
+              <div
+                key={entry.id}
+                className="bg-white/90 p-4 rounded-xl shadow space-y-2"
+              >
                 <p className="text-sm text-gray-500 font-semibold">
                   {new Date(entry.date).toDateString()}
                 </p>

@@ -1,12 +1,20 @@
-import React, { useState } from "react";
+import React, { useState, useEffect } from "react";
+import { SquareChevronLeft, SquareChevronRight } from "lucide-react";
 
 const moods = ["Happy", "Sad", "Angry", "Anxious", "Excited"];
 const triggerOptions = ["Work", "Friends", "Weather", "Music", "Sleep"];
 
-function MoodSelector({ addMoodEntry }) {
-  const [index, setIndex] = useState(0);
-  const [note, setNote] = useState("");
-  const [selectedTriggers, setSelectedTriggers] = useState([]);
+function MoodSelector({ addMoodEntry, currentEntry }) {
+  const initialIndex = currentEntry ? moods.indexOf(currentEntry.mood) : 0;
+  const [index, setIndex] = useState(initialIndex >= 0 ? initialIndex : 0);
+  const [note, setNote] = useState(currentEntry?.note || "");
+  const [selectedTriggers, setSelectedTriggers] = useState(currentEntry?.triggers || []);
+
+  useEffect(() => {
+    setIndex(currentEntry ? moods.indexOf(currentEntry.mood) : 0);
+    setNote(currentEntry?.note || "");
+    setSelectedTriggers(currentEntry?.triggers || []);
+  }, [currentEntry]);
 
   const currentMood = moods[index];
 
@@ -24,41 +32,32 @@ function MoodSelector({ addMoodEntry }) {
       note,
       triggers: selectedTriggers,
     });
-    setNote(""); // reset note
-    setSelectedTriggers([]); // reset triggers
   };
 
   return (
     <div className="h-full flex flex-col p-4">
-      {/* Mood Selection */}
+      {/* Mood Selector */}
       <div className="flex items-center justify-center space-x-4 mb-4">
-        <button 
-          onClick={() => setIndex((index - 1 + moods.length) % moods.length)} 
-          className="text-xl px-2"
-        >
-          ◀️
+        <button onClick={() => setIndex((index - 1 + moods.length) % moods.length)}>
+          <SquareChevronLeft className="w-6 h-6 text-black" />
         </button>
         <span className="text-2xl font-semibold">{currentMood}</span>
-        <button 
-          onClick={() => setIndex((index + 1) % moods.length)} 
-          className="text-xl px-2"
-        >
-          ▶️
+        <button onClick={() => setIndex((index + 1) % moods.length)}>
+          <SquareChevronRight className="w-6 h-6 text-black" />
         </button>
       </div>
 
-      {/* Note Section */}
+      {/* Notes */}
       <div className="flex-1 mb-4">
         <textarea
           value={note}
           onChange={(e) => setNote(e.target.value)}
           placeholder="Add a note about how you're feeling..."
           className="w-full h-full p-3 border rounded-lg resize-none"
-          rows={4}
         />
       </div>
 
-      {/* Triggers Section */}
+      {/* Triggers */}
       <div className="mb-4">
         <h3 className="text-center mb-2 font-medium">Triggers</h3>
         <div className="flex flex-wrap gap-2 justify-center">
@@ -78,12 +77,12 @@ function MoodSelector({ addMoodEntry }) {
         </div>
       </div>
 
-      {/* Submit Button */}
+      {/* Submit */}
       <button
         onClick={handleSubmit}
         className="px-4 py-3 bg-pink-500 text-white rounded-xl hover:bg-pink-600 transition w-full"
       >
-        Select Mood
+        {currentEntry ? "Update Mood" : "Select Mood"}
       </button>
     </div>
   );
