@@ -27,8 +27,9 @@ function App() {
     new Date().toLocaleDateString("en-CA")
   );
 
-  const location = useLocation();
+  const [isLoggedIn, setIsLoggedIn] = useState(null);
   const navigate = useNavigate();
+  const location = useLocation();
 
   // 🌸 Quote of the Day
   const quotes = [
@@ -40,10 +41,20 @@ function App() {
   ];
   const todayQuote = quotes[new Date().getDate() % quotes.length];
 
+  // 📦 Persist mood entries
   useEffect(() => {
     localStorage.setItem("moodEntries", JSON.stringify(entries));
   }, [entries]);
 
+  // 🔐 Auth check
+  useEffect(() => {
+    const unsubscribe = auth.onAuthStateChanged((user) => {
+      setIsLoggedIn(!!user);
+    });
+    return () => unsubscribe();
+  }, []);
+
+  // ➕ Add mood entry
   const addMoodEntry = ({ mood, note, triggers }) => {
     const newEntry = {
       id: crypto.randomUUID(),
@@ -52,10 +63,13 @@ function App() {
       triggers,
       date: selectedDate,
     };
-    const updated = entries.filter((e) => e.date !== selectedDate).concat(newEntry);
-    setEntries(updated);
+
+    const updated = entries.filter((e) => e.date !== selectedDate);
+    updated.push(newEntry);
+    setEntries([...updated]);
   };
 
+  // 🧹 Clear all logs
   const handleClearData = () => {
     const confirmed = window.confirm("Clear all mood logs?");
     if (confirmed) {
@@ -63,16 +77,6 @@ function App() {
       localStorage.removeItem("moodEntries");
     }
   };
-
- const [isLoggedIn, setIsLoggedIn] = useState(null);
-
-useEffect(() => {
-  const unsubscribe = auth.onAuthStateChanged((user) => {
-    setIsLoggedIn(!!user);
-  });
-
-  return () => unsubscribe(); // cleanup
-}, []);
 
   // 🌿 Layout Wrapper
   const PageWrapper = ({ children }) => (
@@ -102,18 +106,17 @@ useEffect(() => {
     </div>
   );
 
+  // ⏳ Show while auth status is loading
   if (isLoggedIn === null) {
-  return (
-    <div className="min-h-screen flex items-center justify-center text-lg text-gray-600">
-      Checking login status...
-    </div>
-  );
-}
-
+    return (
+      <div className="min-h-screen flex items-center justify-center text-lg text-gray-600">
+        Checking login status...
+      </div>
+    );
+  }
 
   return (
     <Routes>
-      {/* 🔐 Redirect to /login if not logged in */}
       {!isLoggedIn && (
         <>
           <Route path="/login" element={<LoginView />} />
@@ -173,8 +176,10 @@ useEffect(() => {
             path="/settings"
             element={
               <PageWrapper>
-                <SettingsView onClearData={handleClearData}
-                onLogout={() => signOut(auth)} />
+                <SettingsView
+                  onClearData={handleClearData}
+                  onLogout={() => auth.signOut()}
+                />
               </PageWrapper>
             }
           />
