@@ -14,24 +14,21 @@ import CalendarView from "./views/CalendarView";
 import LogView from "./views/LogView";
 import SettingsView from "./views/SettingsView";
 import LoginView from "./views/LogInView";
-import { signOut } from "firebase/auth";
+import SignUpView from "./views/SignUpView";
+
 import { auth } from "./firebase";
 
 function App() {
-  const [entries, setEntries] = useState(() => {
-    const saved = localStorage.getItem("moodEntries");
-    return saved ? JSON.parse(saved) : [];
-  });
-
+  const [entries, setEntries] = useState([]);
   const [selectedDate, setSelectedDate] = useState(() =>
     new Date().toLocaleDateString("en-CA")
   );
-
+  const [user, setUser] = useState(null);
   const [isLoggedIn, setIsLoggedIn] = useState(null);
+
   const navigate = useNavigate();
   const location = useLocation();
 
-  // 🌸 Quote of the Day
   const quotes = [
     "You’re not your thoughts. You’re the awareness behind them.",
     "Even the darkest night will end and the sun will rise.",
@@ -41,20 +38,30 @@ function App() {
   ];
   const todayQuote = quotes[new Date().getDate() % quotes.length];
 
-  // 📦 Persist mood entries
+  // 🔐 Check auth
   useEffect(() => {
-    localStorage.setItem("moodEntries", JSON.stringify(entries));
-  }, [entries]);
-
-  // 🔐 Auth check
-  useEffect(() => {
-    const unsubscribe = auth.onAuthStateChanged((user) => {
-      setIsLoggedIn(!!user);
+    const unsubscribe = auth.onAuthStateChanged((firebaseUser) => {
+      setUser(firebaseUser);
+      setIsLoggedIn(!!firebaseUser);
     });
     return () => unsubscribe();
   }, []);
 
-  // ➕ Add mood entry
+  // 🔁 Load entries for this user
+  useEffect(() => {
+    if (user) {
+      const saved = localStorage.getItem(`moodEntries_${user.uid}`);
+      setEntries(saved ? JSON.parse(saved) : []);
+    }
+  }, [user]);
+
+  // 💾 Save entries for this user
+  useEffect(() => {
+    if (user) {
+      localStorage.setItem(`moodEntries_${user.uid}`, JSON.stringify(entries));
+    }
+  }, [entries, user]);
+
   const addMoodEntry = ({ mood, note, triggers }) => {
     const newEntry = {
       id: crypto.randomUUID(),
@@ -69,33 +76,30 @@ function App() {
     setEntries([...updated]);
   };
 
-  // 🧹 Clear all logs
   const handleClearData = () => {
-    const confirmed = window.confirm("Clear all mood logs?");
-    if (confirmed) {
-      setEntries([]);
-      localStorage.removeItem("moodEntries");
+    if (user) {
+      const confirmed = window.confirm("Clear all mood logs?");
+      if (confirmed) {
+        setEntries([]);
+        localStorage.removeItem(`moodEntries_${user.uid}`);
+      }
     }
   };
 
-  // 🌿 Layout Wrapper
+  const handleLogout = () => {
+    auth.signOut();
+  };
+
   const PageWrapper = ({ children }) => (
     <div className="min-h-screen w-full bg-gradient-to-b from-[#FDFBF8] via-[#FAF9F6] to-[#F5F3EF] flex flex-col items-center pt-12 px-4 pb-24">
-      {/* Top Header */}
       <div className="flex justify-between items-center w-full max-w-md mb-4 px-2">
-        <button onClick={() => navigate("/calendar")} className="text-2xl">
-          📆
-        </button>
+        <button onClick={() => navigate("/calendar")} className="text-2xl">📆</button>
         <h1 className="text-xl font-bold text-gray-700">MindMapMe</h1>
-        <button onClick={() => navigate("/settings")} className="text-2xl">
-          ⚙️
-        </button>
+        <button onClick={() => navigate("/settings")} className="text-2xl">⚙️</button>
       </div>
 
-      {/* Page Content */}
       {children}
 
-      {/* Bottom Navigation */}
       {isLoggedIn && (
         <div className="fixed bottom-4 w-full max-w-md flex justify-around items-center bg-white/70 backdrop-blur-md p-3 rounded-full shadow-lg mx-auto">
           <button onClick={() => navigate("/")} className="text-2xl">📅</button>
@@ -106,7 +110,6 @@ function App() {
     </div>
   );
 
-  // ⏳ Show while auth status is loading
   if (isLoggedIn === null) {
     return (
       <div className="min-h-screen flex items-center justify-center text-lg text-gray-600">
@@ -120,6 +123,7 @@ function App() {
       {!isLoggedIn && (
         <>
           <Route path="/login" element={<LoginView />} />
+          <Route path="/signup" element={<SignUpView />} />
           <Route path="*" element={<Navigate to="/login" />} />
         </>
       )}
@@ -178,7 +182,8 @@ function App() {
               <PageWrapper>
                 <SettingsView
                   onClearData={handleClearData}
-                  onLogout={() => auth.signOut()}
+                  onLogout={handleLogout}
+                  user={user}
                 />
               </PageWrapper>
             }
