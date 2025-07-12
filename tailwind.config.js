@@ -1,15 +1,16 @@
 /** @type {import('tailwindcss').Config} */
 export default {
+  darkMode: false, // ⛔ disables all dark mode responsiveness
   content: [
     "./index.html",
-    "./src/**/*.{js,jsx}", // tells Tailwind where to scan for classes
+    "./src/**/*.{js,jsx}",
   ],
   theme: {
     extend: {
       fontFamily: {
-        sans: ['Nunito', 'sans-serif'], // now your font-sans is fully Nunito-fied 💖
+        sans: ['Nunito', 'sans-serif'],
       },
     },
   },
   plugins: [],
-}
+};
