@@ -4,11 +4,11 @@ import "react-calendar/dist/Calendar.css";
 
 function MoodCalendar({ entries, selectedDate, setSelectedDate }) {
   const moodColors = {
-    Happy: "#F5E054",     // soft yellow
-    Sad: "#4D66F5",       // calm blue-gray
-    Angry: "#F51E25",     // pastel peach
-    Anxious: "#47F596",   // light gray
-    Excited: "#F5B3A7",   // warm beige
+    Happy: "#F5E054",     
+    Sad: "#4D66F5",       
+    Angry: "#F51E25",     
+    Anxious: "#47F596",   
+    Excited: "#F5B3A7",   
   };
 
   const moodEmojis = {
